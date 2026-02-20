@@ -83,4 +83,33 @@ export class WebGL2Utils {
     }
   }
 
+  hexToRgb(hex) {
+    // Remove the '#' character if it exists
+    hex = hex.replace(/^#/, '');
+
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    if (hex.length === 3) {
+        hex = hex.split('').map(char => char + char).join('');
+    }
+
+    // Validate hex format (should be 6 digits after potential expansion)
+    if (!/^[a-f\d]{6}$/i.test(hex)) {
+        return null; // Invalid color
+    }
+
+    // Split into red, green, and blue components
+    const rgbArr = hex.match(/.{2}/g);
+
+    // Convert each 2-character hex string to a decimal integer using parseInt(string, 16)
+    const r = parseInt(rgbArr[0], 16);
+    const g = parseInt(rgbArr[1], 16);
+    const b = parseInt(rgbArr[2], 16);
+
+    return [r, g, b];
+  }
+
+  normalizeArray(Array) {
+    return Array.map(v => v / 255.0);
+  }
+
 }

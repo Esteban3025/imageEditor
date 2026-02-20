@@ -6,6 +6,7 @@ precision highp float;
 
 // our texture
 uniform sampler2D u_image;
+uniform vec3 u_color;
 
 // the texCoords passed in from the vertex shader.
 in vec2 v_texCoord;
@@ -14,6 +15,8 @@ in vec2 v_texCoord;
 out vec4 outColor;
 
 void main() {
-  vec3 result = texture(u_image, v_texCoord).rgb * vec3(0.5, 0.128, 0.23);
+  vec3 color = u_color;
+  vec3 colorNormalizado = color / 255.0;
+  vec3 result = texture(u_image, v_texCoord).rgb * colorNormalizado;
   outColor = vec4(result, 1.0);
 }
