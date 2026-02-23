@@ -35,3 +35,17 @@ canvas {
   margin: 0;
   padding: 0;
 }
+
+.range{
+  position: absolute;
+  top: 85px;
+  left: 49rem;
+}
+
+.rangeText{
+  position: absolute;
+  top: 85px;
+  left: 40rem;
+  margin: 0;
+  padding: 0;
+}

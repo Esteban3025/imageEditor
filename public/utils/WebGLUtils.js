@@ -112,4 +112,8 @@ export class WebGL2Utils {
     return Array.map(v => v / 255.0);
   }
 
+  normalizeFloat(value) {
+    return value / 100.00;
+  }
+
 }

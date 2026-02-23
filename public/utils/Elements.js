@@ -15,4 +15,13 @@ export class Elements {
     document.body.appendChild(newElement);
     return newElement;
   }
+
+  inputRange(className) {
+    const newElement = document.createElement("input");
+    newElement.type = 'range';
+    newElement.classList.add(`${className}`);
+
+    document.body.appendChild(newElement);
+    return newElement;
+  }
 }
