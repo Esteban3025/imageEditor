@@ -1,11 +1,13 @@
 body {
   margin: 0;
+  position: relative;
 }
     
 canvas {
   display: block;  /* prevents scrollbar */
   width: 100vw;
   height: 100vh;
+  position: relative;
 }
     
 .rgbInput{
@@ -49,3 +51,75 @@ canvas {
   margin: 0;
   padding: 0;
 }
+
+.loadButton1 {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  z-index: -1;
+  position: absolute;
+  top: 2rem;
+  left: 3rem;
+  background-color: black;
+  overflow: hidden;
+}
+
+.labelUpload1 {
+  cursor: pointer;
+  position: absolute;
+  top: 2rem;
+  left: 3rem;
+}
+
+.loadButton2 {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  z-index: -1;
+  position: absolute;
+  top: 5rem;
+  left: 3rem;
+  background-color: black;
+  overflow: hidden;
+}
+
+.labelUpload2 {
+  cursor: pointer;
+  position: absolute;
+  top: 5rem;
+  left: 3rem;
+}
+
+.inputText {
+  position: absolute;
+  top: 10rem;
+  left: 0;
+  width: 50px;
+}
+
+.inputText2 {
+  position: absolute;
+  top: 10rem;
+  left: 5rem;
+  width: 50px;
+}
+
+.textInput {
+  position: absolute;
+  top: 12rem;
+  left: 0;
+}
+
+
+.rotationRange{
+  position: absolute;
+  top: 3rem;
+  left: 80rem;
+}
+
+.rotationRangeText{
+  position: absolute;
+  top: 2rem;
+  left: 75rem;
+}
+

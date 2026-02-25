@@ -1,84 +1,135 @@
 import { WebGL2Utils } from './utils/WebGLUtils.js';
 import { Shapes } from './utils/Shapes.js';
 import { UI } from './utils/setupUI.js';
+import { Elements } from './utils/Elements.js';
+import { UtilMath } from './utils/Math.js';
 
 const utils = new WebGL2Utils();
 const shapes = new Shapes();
-const ui = new UI();
+const ui = new UI();  
+const elements = new Elements();
+const glm =  new UtilMath()
 
 let filterColor = [255, 255, 255];
 let backgroundColor = [30, 23, 23];
 let opacity = 0.0;
+let dimensions = [500, 500];
 
-function createTexture(gl, image) {
-  // Create a texture.
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
+let rotationInRadians = 0;
 
-  // Set the parameters so we don't need mips and so we're not filtering
-  // and we don't repeat at the edges
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+// Setup UI
+let rgbInput = ui.textRgb("rgbInput", "rgbText", "Filter Color");
 
-  // Upload the image into the texture.
-  const mipLevel = 0;               // the largest mip
-  const internalFormat = gl.RGBA;   // format we want in the texture
-  const srcFormat = gl.RGBA;        // format of data we are supplying
-  const srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-  gl.texImage2D(gl.TEXTURE_2D,
-                mipLevel,
-                internalFormat,
-                srcFormat,
-                srcType,
-                image);
-};
+rgbInput.addEventListener("change", (e) => {
+    filterColor = utils.hexToRgb(e.target.value);
+}); 
 
-async function loadImage(path) {
-  const img = new Image();
-  img.src = `${path}`; 
-  console.log(img);
-  return img;
+let backgroundInput = ui.textRgb("backgroundColor", "backgroundText", "Background Color");
+
+backgroundInput.addEventListener("change", (e) => {
+  const data = utils.hexToRgb(e.target.value);
+  backgroundColor = utils.normalizeArray(data);
+  // console.log(backgroundColor);
+});
+
+let rotationRange = ui.textRange("rotationRange", "rotationRangeText", "Rotate");
+
+rotationRange.addEventListener("change", (e) => {
+  const val = e.target.value;
+  const angleInDegrees = 360 - val;
+  const angleInRadians = angleInDegrees * Math.PI / 180;
+  rotationInRadians = angleInRadians;
+});
+
+let inputTextandP = ui.scaleInputs("inputText", "inputText2", "textInput", "Width - Height");
+
+inputTextandP[0].addEventListener("change", (e) => {
+  // utils.normalizeFloat(e.target.value)
+  console.log(e.target.value);
+  const data = e.target.value;
+  dimensions[0] = data;
+});
+
+inputTextandP[1].addEventListener("change", (e) => {
+  // utils.normalizeFloat(e.target.value)
+  console.log(e.target.value);
+  const data = e.target.value;
+  dimensions[1] = data;
+});
+
+let range = ui.textRange("range", "rangeText", "Mix images");
+
+range.addEventListener("change", (e) => {
+  const data = utils.normalizeFloat(e.target.value);
+  opacity = data; 
+});
+
+// load textures images
+let image = await utils.loadImage("/images/descarga.jpg");
+let image2 = await utils.loadImage("/images/awesomeface.png");
+
+function uploadImage1() {
+  const loadButton = elements.InputTypeFile('loadButton1', 'labelUpload1', 'a1', 'Upload Image 1');
+
+  loadButton.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => { 
+      const img = new Image();
+      img.onload = () => {
+        image = img;
+        render();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-const image = new Image();
-  image.src = "/images/descarga.jpg"; 
-  image.onload = function() {
-  render(image);
-};
+function uploadImage2() {
+  const loadButton = elements.InputTypeFile('loadButton2', 'labelUpload2', 'a2', 'Upload Image 2');
 
-async function render(image) {
+  loadButton.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => { 
+      const img = new Image();
+      img.onload = () => {
+        image2 = img;
+        render();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+uploadImage1();
+uploadImage2();
+
+async function render() {
   const canvas = document.getElementById("c");
   const gl = canvas.getContext("webgl2");
   if (!gl) {
     return;
   }
 
-  let translation = [(canvas.clientWidth * 0.5) - canvas.clientWidth * 0.18, (canvas.clientHeight * 0.5) - canvas.clientHeight * 0.3];
+  let position = {
+    x: (canvas.clientWidth * 0.5) - canvas.clientWidth * 0.18,
+    y: (canvas.clientHeight * 0.5) - canvas.clientHeight * 0.3 
+  };
 
-  // Setup UI
-  const rgbInput = ui.textRgb("rgbInput", "rgbText", "Filter Color");
+  let scale = {
+    x: 1,
+    y: 1
+  }; 
 
-  rgbInput.addEventListener("change", (e) => {
-      filterColor = utils.hexToRgb(e.target.value);
-  }); 
+  
 
-  const backgroundInput = ui.textRgb("backgroundColor", "backgroundText", "Background Color");
-
-  backgroundInput.addEventListener("change", (e) => {
-      const data = utils.hexToRgb(e.target.value);
-      backgroundColor = utils.normalizeArray(data);
-      console.log(backgroundColor);
-  });
-
-  const range = ui.textRange("range", "rangeText", "Mix");
-
-  range.addEventListener("change", (e) => {
-      const data = utils.normalizeFloat(e.target.value);
-      opacity = data;
-      console.log(data);
-  });
+  // process all the inputs
+  utils.processInput(gl, position, scale, rotationInRadians);
 
   // setup GLSL program
   const mainVS = await utils.createShader(gl, gl.VERTEX_SHADER, "/shaders/main.vs");
@@ -95,8 +146,9 @@ async function render(image) {
   const imageLocation = gl.getUniformLocation(mainProgram, "u_image");
   const imageLocationSecond = gl.getUniformLocation(mainProgram, "u_image2");
   const colorUniform = gl.getUniformLocation(mainProgram, "u_color");
-  const translationUniform = gl.getUniformLocation(mainProgram, "U_translation");
   const opacityImages = gl.getUniformLocation(mainProgram, "u_opacity");
+
+  const matrixLocation = gl.getUniformLocation(mainProgram, "u_matrix");
 
   // Create a vertex array object (attribute state)
   const vao = gl.createVertexArray();
@@ -132,51 +184,60 @@ async function render(image) {
 
   gl.vertexAttribPointer(texCoordAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-  // load textures images
-  const img = await loadImage("/images/awesomeface.png");
-
   // bind textures
-
   gl.activeTexture(gl.TEXTURE0);
-  createTexture(gl, image);
+  utils.createTexture(gl, image);
   
   gl.activeTexture(gl.TEXTURE1);
-  createTexture(gl, img);
-  
+  utils.createTexture(gl, image2);
+
   requestAnimationFrame(drawScene);
   function drawScene() {
-  utils.resizeCanvasToDisplaySize(gl.canvas);
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    utils.resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    
 
-  // Clear the canvas
-  gl.clearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], 1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Clear the canvas
+    gl.clearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  gl.useProgram(mainProgram);
+    gl.useProgram(mainProgram);
 
-  gl.bindVertexArray(vao);
+    gl.bindVertexArray(vao);
 
-  gl.uniform1f(opacityImages, opacity);
-  gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
-  gl.uniform2fv(translationUniform, translation);
-  gl.uniform3fv(colorUniform, filterColor);
+    gl.uniform1f(opacityImages, opacity);
+    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+    gl.uniform3fv(colorUniform, filterColor);
 
-  gl.activeTexture(gl.TEXTURE0);
-  gl.uniform1i(imageLocation, 0);
-  gl.activeTexture(gl.TEXTURE1);
-  gl.uniform1i(imageLocationSecond, 1);
+    const moveOriginMatrix = glm.translation(40,50);
+    const translationMatrix = glm.translation(position.x, position.y);
+    const rotationMatrix = glm.rotation(rotationInRadians);
+    const scaleMatrix = glm.scaling(scale.x, scale.y);
+ 
+    // Multiply the matrices.
+    let matrix = glm.multiply(translationMatrix, rotationMatrix);
+    matrix = glm.multiply(matrix, scaleMatrix);
+    matrix = glm.multiply(matrix, moveOriginMatrix);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.uniformMatrix3fv(matrixLocation, false, matrix);
 
-  shapes.setRectangle(gl, 0, 0, image.width, image.height);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.uniform1i(imageLocation, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.uniform1i(imageLocationSecond, 1);
 
-  // Draw the rectangle.
-  const primitiveType = gl.TRIANGLES;
-  const offset = 0;
-  const count = 6;
-  gl.drawArrays(primitiveType, offset, count);
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-  requestAnimationFrame(drawScene);
+    shapes.setRectangle(gl, 0, 0, dimensions[0], dimensions[1]);
+
+    // Draw the rectangle.
+    const primitiveType = gl.TRIANGLES;
+    const offset = 0;
+    const count = 6;
+    gl.drawArrays(primitiveType, offset, count);
+
+    requestAnimationFrame(drawScene);
   }
 }
 
+render();

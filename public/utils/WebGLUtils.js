@@ -1,3 +1,5 @@
+let keys = {};
+
 export class WebGL2Utils {
     
   async createShader(gl, type, path) {
@@ -39,6 +41,32 @@ export class WebGL2Utils {
     return await res.text();
   }
 
+  async loadImage(path) {
+    const img = new Image();
+    img.src = `${path}`; 
+    console.log(img);
+    return img;
+  }
+
+  uploadImage(image) {
+    const loadButton = elements.button('loadButton');
+
+    loadButton.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => { 
+        const img = new Image();
+        img.onload = () => {
+          image = img;
+          render();
+      };
+      img.src = e.target.result;
+    };
+      reader.readAsDataURL(file);
+    });
+  }
+
   resizeCanvasToDisplaySize(canvas) {
     // Lookup the size the browser is displaying the canvas in CSS pixels.
     const displayWidth  = canvas.clientWidth;
@@ -56,31 +84,74 @@ export class WebGL2Utils {
     return needResize;
   }
 
+  createTexture(gl, image) {
+    // Create a texture.
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Set the parameters so we don't need mips and so we're not filtering
+    // and we don't repeat at the edges
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+    // Upload the image into the texture.
+    const mipLevel = 0;               // the largest mip
+    const internalFormat = gl.RGBA;   // format we want in the texture
+    const srcFormat = gl.RGBA;        // format of data we are supplying
+    const srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+    gl.texImage2D(gl.TEXTURE_2D,
+                mipLevel,
+                internalFormat,
+                srcFormat,
+                srcType,
+                image);
+  };
+
   getRandomNumber(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-  processInput(gl, key, position) {
-    // console.log("Key Pressed: ", key);
+  processInput(gl, position, scale, rotationInRadians) {
     let speed = 20;
-    switch (key) {
-      case "w":
+    let scaled = 0.2;
+    let val = 270;
+    document.addEventListener("keydown", (e) => {
+      keys = e.key.toLocaleLowerCase();
+      console.log("Key Pressed: ", keys);
+      switch (keys) {
+      case "arrowup":
         position.y -= speed;
-        break
-      case "s":
+        break;
+      case "arrowdown":
         position.y += speed;
-        break
-      case "d":
+        break;
+      case "arrowright":
         position.x += speed;
-        break
-      case "a":
+        break;
+      case "arrowleft":
         position.x -= speed;
-        break
-      case "t":
-        position.x = 0;
-        position.y = 0;
-        break
+        break;
+      case "r":
+        position.x = (gl.canvas.clientWidth * 0.5) - gl.canvas.clientWidth * 0.18;
+        position.y = (gl.canvas.clientHeight * 0.5) - gl.canvas.clientHeight * 0.3;
+        break;
+      case "+":
+        scale.x += scaled;
+        scale.y += scaled;
+        break;
+      case "-":
+        scale.x -= scaled;
+        scale.y -= scaled;
+        break;
+      case "e":
+        rotationInRadians -= 20;
+        break;
     }
+    });
+    
+    
   }
 
   hexToRgb(hex) {
@@ -114,6 +185,13 @@ export class WebGL2Utils {
 
   normalizeFloat(value) {
     return value / 100.00;
+  }
+
+  printSineAndCosineForAnAngle(angleInDegrees) {
+    const angleInRadians = angleInDegrees * Math.PI / 180;
+    const s = Math.sin(angleInRadians);
+    const c = Math.cos(angleInRadians);
+    console.log("s = " + s + " c = " + c);
   }
 
 }
