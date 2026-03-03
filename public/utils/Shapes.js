@@ -30,11 +30,11 @@ export class Shapes {
       gl.STATIC_DRAW);
   }
 
-  setRectangle(gl, x, y, width, height) {
-    const x1 = x;
-    const x2 = x + width;
-    const y1 = y;
-    const y2 = y + height;
+  setRectangle(gl, width, height) {
+    const x1 = -width / 2;
+    const x2 = width / 2;
+    const y1 = -height / 2;
+    const y2 = height / 2;
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
         x1, y1,
         x2, y1,

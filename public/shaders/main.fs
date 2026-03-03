@@ -24,6 +24,7 @@ void main() {
   vec4 texture2 = texture(u_image2, v_texCoord);
 
   vec4 mixedTex = mix(texture1, texture2, u_opacity);
+  vec4 result = mixedTex * vec4(colorNormalizado, 1.0) ;
 
-  outColor = mixedTex * vec4(colorNormalizado, 1.0);
-}
+  outColor = result;
+} 

@@ -1,10 +1,15 @@
 export class Elements {
+  constructor() {
+    this.createElements = [];
+  }
+
   InputTypeColor(className) {
     const newElement = document.createElement("input");
     newElement.type = 'color';
     newElement.classList.add(`${className}`);
 
     document.body.appendChild(newElement);
+    this.createElements.push(newElement);
     return newElement;
   }
 
@@ -13,15 +18,18 @@ export class Elements {
     newElement.classList.add(`${className}`);
 
     document.body.appendChild(newElement);
+    this.createElements.push(newElement);
     return newElement;
   }
 
   inputTypeRange(className) {
     const newElement = document.createElement("input");
     newElement.type = 'range';
+    newElement.setAttribute("value", "0");
     newElement.classList.add(`${className}`);
 
     document.body.appendChild(newElement);
+    this.createElements.push(newElement);
     return newElement;
   }
 
@@ -33,13 +41,16 @@ export class Elements {
     newElement.accept = 'image/*';
     newElement.classList.add(`${inputClassName}`);
     document.body.appendChild(newElement);
-
+    this.createElements.push(newElement);
+  
     const labelElement = document.createElement("label");
     labelElement.setAttribute('for', `${id}`);
     labelElement.textContent = `${text}`;
     labelElement.classList.add(`${labelClassName}`);
     
     document.body.appendChild(labelElement);
+    
+    this.createElements.push(labelElement);
     return newElement;
   }
 
@@ -52,6 +63,15 @@ export class Elements {
     newElement.classList.add(`${className}`);
 
     document.body.appendChild(newElement);
+    this.createElements.push(newElement);
     return newElement;
+  }
+
+  hideElements(){
+    this.createElements.map(e => e.hidden = true);
+  }
+
+  showElements(){
+    this.createElements.map(e => e.hidden = false);
   }
 }

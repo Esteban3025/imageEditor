@@ -1,3 +1,8 @@
+import { UI } from './SetupUI.js';
+import { Elements } from './Elements.js';
+const ui = new UI();  
+const elements = new Elements();
+
 let keys = {};
 
 export class WebGL2Utils {
@@ -113,29 +118,34 @@ export class WebGL2Utils {
     return Math.random() * (max - min) + min;
   }
 
-  processInput(gl, position, scale, rotationInRadians) {
+  processInput(gl, position, scale, rotationInRadians, dimensions) {
     let speed = 20;
     let scaled = 0.2;
-    let val = 270;
     document.addEventListener("keydown", (e) => {
       keys = e.key.toLocaleLowerCase();
       console.log("Key Pressed: ", keys);
       switch (keys) {
       case "arrowup":
+      case "w":
         position.y -= speed;
         break;
       case "arrowdown":
+      case "s":
         position.y += speed;
         break;
       case "arrowright":
+      case "d":
         position.x += speed;
         break;
       case "arrowleft":
+      case "a":
         position.x -= speed;
         break;
       case "r":
-        position.x = (gl.canvas.clientWidth * 0.5) - gl.canvas.clientWidth * 0.18;
-        position.y = (gl.canvas.clientHeight * 0.5) - gl.canvas.clientHeight * 0.3;
+        position.x = gl.canvas.clientWidth / 2;
+        position.y = gl.canvas.clientHeight / 2;
+        dimensions[0] = 500;
+        dimensions[1] = 500;
         break;
       case "+":
         scale.x += scaled;
@@ -146,7 +156,14 @@ export class WebGL2Utils {
         scale.y -= scaled;
         break;
       case "e":
-        rotationInRadians -= 20;
+        scale.x = -scale.x;
+        break;
+      case "f":
+        scale.y = -scale.y;
+        break;
+      case "m":
+        ui.hideUI();
+        elements.hideElements();
         break;
     }
     });

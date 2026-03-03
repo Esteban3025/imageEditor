@@ -27,4 +27,12 @@ export class UI {
     p.textContent = `${text}`;
     return [inputText, inputText2];
   }
+
+  hideUI() {
+    elements.hideElements();
+  }
+
+  showUI() {
+    elements.showElements();
+  }
 }

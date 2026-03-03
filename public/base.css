@@ -8,46 +8,47 @@ canvas {
   width: 100vw;
   height: 100vh;
   position: relative;
+  z-index: 0;
 }
     
-.rgbInput{
+.filterInput{
   position: absolute;
-  top: 0px;
-  left: 46rem;
+  top: 0.5rem;
+  left: 26rem;
 }
 
-.rgbText{
+.filterText{
   position: absolute;
-  top: 5px;
-  left: 40rem;
+  top: 1rem;
+  left: 20rem;
   margin: 0;
   padding: 0;
 }
 
-.backgroundColor{
+.backgroundColorInput{
   position: absolute;
-  top: 40px;
-  left: 49rem;
+  top: 2.5rem;
+  left: 29rem;
 }
 
-.backgroundText{
+.backgroundColorText{
   position: absolute;
-  top: 40px;
-  left: 40rem;
+  top: 3rem;
+  left: 20rem;
   margin: 0;
   padding: 0;
 }
 
-.range{
+.mixrange{
   position: absolute;
-  top: 85px;
-  left: 49rem;
-}
-
-.rangeText{
-  position: absolute;
-  top: 85px;
+  top: 1rem;
   left: 40rem;
+} 
+
+.mixtext{
+  position: absolute;
+  top: 1rem;
+  left: 34rem;
   margin: 0;
   padding: 0;
 }
@@ -67,8 +68,8 @@ canvas {
 .labelUpload1 {
   cursor: pointer;
   position: absolute;
-  top: 2rem;
-  left: 3rem;
+  top: 1rem;
+  left: 1.5rem;
 }
 
 .loadButton2 {
@@ -86,40 +87,27 @@ canvas {
 .labelUpload2 {
   cursor: pointer;
   position: absolute;
-  top: 5rem;
-  left: 3rem;
-}
-
-.inputText {
-  position: absolute;
-  top: 10rem;
-  left: 0;
-  width: 50px;
-}
-
-.inputText2 {
-  position: absolute;
-  top: 10rem;
-  left: 5rem;
-  width: 50px;
-}
-
-.textInput {
-  position: absolute;
-  top: 12rem;
-  left: 0;
-}
-
-
-.rotationRange{
-  position: absolute;
   top: 3rem;
-  left: 80rem;
+  left: 1.5rem;
 }
 
-.rotationRangeText{
+.dimensionInput {
+  position: absolute;
+  top: 1rem;
+  left: 10rem;
+  width: 50px;
+}
+
+.dimensionInput2 {
+  position: absolute;
+  top: 1rem;
+  left: 14rem;  
+  width: 50px;
+}
+
+.dimensionText {
   position: absolute;
   top: 2rem;
-  left: 75rem;
+  left: 10rem;
 }
 

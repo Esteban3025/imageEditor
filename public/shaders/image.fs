@@ -10,5 +10,6 @@ in vec2 v_texCoord;
 out vec4 outColor;
 
 void main() {
-  outColor = texture(u_image, v_texCoord);
+  vec3 st = v_texCoord
+  outColor = texture(u_image, v_texCoord).bgra * sin(u_color);
 }

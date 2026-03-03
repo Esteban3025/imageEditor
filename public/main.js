@@ -18,13 +18,13 @@ let dimensions = [500, 500];
 let rotationInRadians = 0;
 
 // Setup UI
-let rgbInput = ui.textRgb("rgbInput", "rgbText", "Filter Color");
+let filterInput = ui.textRgb("filterInput", "filterText", "Filter Color");
 
-rgbInput.addEventListener("change", (e) => {
+filterInput.addEventListener("change", (e) => {
     filterColor = utils.hexToRgb(e.target.value);
 }); 
 
-let backgroundInput = ui.textRgb("backgroundColor", "backgroundText", "Background Color");
+let backgroundInput = ui.textRgb("backgroundColorInput", "backgroundColorText", "Background Color");
 
 backgroundInput.addEventListener("change", (e) => {
   const data = utils.hexToRgb(e.target.value);
@@ -32,37 +32,30 @@ backgroundInput.addEventListener("change", (e) => {
   // console.log(backgroundColor);
 });
 
-let rotationRange = ui.textRange("rotationRange", "rotationRangeText", "Rotate");
 
-rotationRange.addEventListener("change", (e) => {
-  const val = e.target.value;
-  const angleInDegrees = 360 - val;
-  const angleInRadians = angleInDegrees * Math.PI / 180;
-  rotationInRadians = angleInRadians;
-});
+let dimensionsInput = ui.scaleInputs("dimensionInput", "dimensionInput2", "dimensionText", "Width - Height");
 
-let inputTextandP = ui.scaleInputs("inputText", "inputText2", "textInput", "Width - Height");
-
-inputTextandP[0].addEventListener("change", (e) => {
+dimensionsInput[0].addEventListener("change", (e) => {
   // utils.normalizeFloat(e.target.value)
   console.log(e.target.value);
   const data = e.target.value;
   dimensions[0] = data;
 });
 
-inputTextandP[1].addEventListener("change", (e) => {
+dimensionsInput[1].addEventListener("change", (e) => {
   // utils.normalizeFloat(e.target.value)
   console.log(e.target.value);
   const data = e.target.value;
   dimensions[1] = data;
 });
 
-let range = ui.textRange("range", "rangeText", "Mix images");
+let Mixrange = ui.textRange("mixrange", "mixtext", "Mix images");
 
-range.addEventListener("change", (e) => {
+Mixrange.addEventListener("change", (e) => {
   const data = utils.normalizeFloat(e.target.value);
   opacity = data; 
 });
+
 
 // load textures images
 let image = await utils.loadImage("/images/descarga.jpg");
@@ -117,8 +110,8 @@ async function render() {
   }
 
   let position = {
-    x: (canvas.clientWidth * 0.5) - canvas.clientWidth * 0.18,
-    y: (canvas.clientHeight * 0.5) - canvas.clientHeight * 0.3 
+    x: gl.canvas.clientWidth / 2,
+    y: gl.canvas.clientHeight / 2
   };
 
   let scale = {
@@ -126,10 +119,9 @@ async function render() {
     y: 1
   }; 
 
-  
-
   // process all the inputs
-  utils.processInput(gl, position, scale, rotationInRadians);
+  utils.processInput(gl, position, scale, rotationInRadians, dimensions);
+
 
   // setup GLSL program
   const mainVS = await utils.createShader(gl, gl.VERTEX_SHADER, "/shaders/main.vs");
@@ -195,7 +187,6 @@ async function render() {
   function drawScene() {
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    
 
     // Clear the canvas
     gl.clearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], 1);
@@ -209,7 +200,7 @@ async function render() {
     gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
     gl.uniform3fv(colorUniform, filterColor);
 
-    const moveOriginMatrix = glm.translation(40,50);
+    const moveOriginMatrix = glm.translation(0, 0);
     const translationMatrix = glm.translation(position.x, position.y);
     const rotationMatrix = glm.rotation(rotationInRadians);
     const scaleMatrix = glm.scaling(scale.x, scale.y);
@@ -228,7 +219,7 @@ async function render() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    shapes.setRectangle(gl, 0, 0, dimensions[0], dimensions[1]);
+    shapes.setRectangle(gl, dimensions[0], dimensions[1]);
 
     // Draw the rectangle.
     const primitiveType = gl.TRIANGLES;
