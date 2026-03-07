@@ -13,7 +13,11 @@ const glm =  new UtilMath()
 let filterColor = [255, 255, 255];
 let backgroundColor = [30, 23, 23];
 let opacity = 0.0;
-let dimensions = [500, 500];
+let keys = {
+  key: 0
+};
+
+let then = 0;
 
 let rotationInRadians = 0;
 
@@ -109,19 +113,27 @@ async function render() {
     return;
   }
 
-  let position = {
-    x: gl.canvas.clientWidth / 2,
-    y: gl.canvas.clientHeight / 2
-  };
 
-  let scale = {
-    x: 1,
-    y: 1
-  }; 
+  let properties = {
+    position: {
+      x: gl.canvas.clientWidth / 2,
+      y: gl.canvas.clientHeight / 2,
+      defaultx: gl.canvas.clientWidth / 2,
+      defaulty: gl.canvas.clientHeight / 2
+    },
+    
+    scale: {
+      x: 1,
+      y: 1,
+      default: 1,
+    },
+
+    dimensions: [500, 500]
+  }
 
   // process all the inputs
-  utils.processInput(gl, position, scale, rotationInRadians, dimensions);
-
+  utils.processInput(keys);
+  console.log(keys);
 
   // setup GLSL program
   const mainVS = await utils.createShader(gl, gl.VERTEX_SHADER, "/shaders/main.vs");
@@ -183,8 +195,14 @@ async function render() {
   gl.activeTexture(gl.TEXTURE1);
   utils.createTexture(gl, image2);
 
+  
+
   requestAnimationFrame(drawScene);
-  function drawScene() {
+  function drawScene(now) {
+    utils.a(properties, keys);
+    now *= 0.001;
+    let deltaTime = now - then;
+
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -201,10 +219,9 @@ async function render() {
     gl.uniform3fv(colorUniform, filterColor);
 
     const moveOriginMatrix = glm.translation(0, 0);
-    const translationMatrix = glm.translation(position.x, position.y);
+    const translationMatrix = glm.translation(properties.position.x, properties.position.y);
     const rotationMatrix = glm.rotation(rotationInRadians);
-    const scaleMatrix = glm.scaling(scale.x, scale.y);
- 
+    const scaleMatrix = glm.scaling(properties.scale.x, properties.scale.y);
     // Multiply the matrices.
     let matrix = glm.multiply(translationMatrix, rotationMatrix);
     matrix = glm.multiply(matrix, scaleMatrix);
@@ -219,7 +236,7 @@ async function render() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    shapes.setRectangle(gl, dimensions[0], dimensions[1]);
+    shapes.setRectangle(gl, properties.dimensions[0], properties.dimensions[1]);
 
     // Draw the rectangle.
     const primitiveType = gl.TRIANGLES;
@@ -228,6 +245,7 @@ async function render() {
     gl.drawArrays(primitiveType, offset, count);
 
     requestAnimationFrame(drawScene);
+    then = now;
   }
 }
 

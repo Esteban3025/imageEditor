@@ -3,8 +3,6 @@ import { Elements } from './Elements.js';
 const ui = new UI();  
 const elements = new Elements();
 
-let keys = {};
-
 export class WebGL2Utils {
     
   async createShader(gl, type, path) {
@@ -118,57 +116,64 @@ export class WebGL2Utils {
     return Math.random() * (max - min) + min;
   }
 
-  processInput(gl, position, scale, rotationInRadians, dimensions) {
+  processInput(keys) {
+    window.addEventListener("keydown", (e) => {
+      keys.key = e.key.toLocaleLowerCase();
+      // console.log("Key Pressed: ", keys);
+      return keys.key;
+    });
+  }
+
+  a(properties, keys) {
     let speed = 20;
     let scaled = 0.2;
-    document.addEventListener("keydown", (e) => {
-      keys = e.key.toLocaleLowerCase();
-      console.log("Key Pressed: ", keys);
-      switch (keys) {
+    // console.log("key desde a: ", keys);
+    switch (keys) {
       case "arrowup":
       case "w":
-        position.y -= speed;
+        properties.position.y -= speed;
         break;
       case "arrowdown":
       case "s":
-        position.y += speed;
+        properties.position.y += speed;
         break;
       case "arrowright":
       case "d":
-        position.x += speed;
+        properties.position.x += speed;
         break;
       case "arrowleft":
       case "a":
-        position.x -= speed;
+        properties.position.x -= speed;
         break;
       case "r":
-        position.x = gl.canvas.clientWidth / 2;
-        position.y = gl.canvas.clientHeight / 2;
-        dimensions[0] = 500;
-        dimensions[1] = 500;
+        properties.position.x = properties.position.defaultx;
+        properties.position.y = properties.position.defaulty;
+        properties.dimensions[0] = 500;
+        properties.dimensions[1] = 500;
         break;
       case "+":
-        scale.x += scaled;
-        scale.y += scaled;
+        properties.scale.x += scaled;
+        properties.scale.y += scaled;
         break;
       case "-":
-        scale.x -= scaled;
-        scale.y -= scaled;
+        properties.scale.x -= scaled;
+        properties.scale.y -= scaled;
         break;
       case "e":
-        scale.x = -scale.x;
+        properties.scale.x = -properties.scale.x;
         break;
       case "f":
-        scale.y = -scale.y;
+        properties.scale.y = -properties.scale.y;
+        break;
+      case "p":
+        properties.scale.y = properties.scale.default;
+        properties.scale.x = properties.scale.default;
         break;
       case "m":
         ui.hideUI();
         elements.hideElements();
         break;
     }
-    });
-    
-    
   }
 
   hexToRgb(hex) {
